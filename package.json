@@ -1,0 +1,24 @@
+{
+  "name": "qr-contact",
+  "version": "1.0.0",
+  "description": "Contact Info Qr Generator",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mythius/qrcontact.git"
+  },
+  "author": "Matthias Southwick",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mythius/qrcontact/issues"
+  },
+  "homepage": "https://github.com/mythius/qrcontact#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  }
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="icon" type="image/x-icon" href="icon.png">
+	<script src="qr.min.js"></script>
+	<script src="helpers.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<meta name="viewport" content="width=280, user-scalable=0">
+	<style>
+		h1{
+			font-size: 28px;
+		}
+		@media print{
+			@page{
+				margin: 10px;
+			}
+		}
+		input,button{
+			display: block;
+			margin-bottom: 3px;
+			width: 256px;
+		}
+
+	</style>
+</head>
+<body>
+	<h1>Contact QR Code</h1>
+	<main>
+		<input placeholder="First Name" type="text" id="fname">
+		<input placeholder="Last Name" type="text" id="lname">
+		<input placeholder="Phone #" type="tel" id="phone" >
+		<input placeholder="Email (Opt)" type="email" id="email">
+		<input placeholder="Website URL (Opt)" type="url" id="url">
+		<button id=generate>Generate</button>
+	</main>
+	<div id="qrcode"></div>
+	<options>
+		<button id=print>Print</button>
+		<button id=download>Download</button>
+	</options>
+	<script type="text/javascript">
+		const socket = io();
+		hide(obj('options'));
+
+		var contact_info = {
+			first_name: '',
+			last_name: '',
+			cell: ''
+		};
+
+		obj('#generate').on('click',e=>{
+			contact_info.first_name = obj('#fname').value.trim();
+			contact_info.last_name = obj('#lname').value.trim();
+			contact_info.cell = obj('#phone').value.trim();
+			contact_info.email = obj('#email').value.trim();
+			contact_info.url = obj('#url').value.trim();
+			if(contact_info.first_name && contact_info.last_name && contact_info.cell){
+				socket.emit('contact2qr',contact_info);
+			}
+		});
+
+		obj('#print').on('click',e=>{
+			hide(obj('main'));
+			hide(obj('options'));
+			print(obj('#qrcode'));
+			setTimeout(()=>{
+				show(obj('main'));
+				show(obj('options'));
+			},500)
+		})
+
+		obj('#download').on('click',e=>{
+			download('My Contact QR Code.png',obj('canvas'));
+		});
+
+		function download(filename,canvas){
+		    var e=create('a');
+		    e.href=canvas.toDataURL();
+		    e.download=filename;
+		    e.style.display='none';
+		    document.body.appendChild(e);
+		    e.click();
+		    document.body.removeChild(e);
+		}
+
+		// 
+
+		socket.on('qr',path=>{
+			let url = "http://qrc.ddns.net/"+path;
+			console.log('QR Generated for: '+url)
+			new QRCode(obj('#qrcode'),url);
+			show(obj('options'));
+		});
+
+	</script>
+</body>
+</html>
